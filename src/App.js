@@ -1,24 +1,70 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState, useCallback, useReducer } from "react";
+import Main from "./main";
+import ProductContext from "./context";
+
+function reducer(state, action) {
+  switch (action) {
+    case "UP":
+      return state + 1;
+    case "DOWN":
+      return state - 1;
+    default:
+      break;
+  }
+}
 
 function App() {
+  let [count, dispatch] = useReducer(reducer, 0);
+
+  let [products, setProduct] = useState([
+    {
+      name: "Banh mi",
+      price: 10000,
+    },
+  ]);
+
+  let addProduct = (name, price) => {
+    let product = {
+      name,
+      price,
+    };
+    setProduct([...products, product]);
+  };
+
+  let deleteProduct = (index) => {
+    products.splice(index, 1);
+    setProduct([...products]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <ProductContext.Provider
+      value={{
+        state: products,
+        addProduct: addProduct,
+        deleteProduct: deleteProduct,
+      }}
+    >
+      <div className="App">
+        <h2>{count}</h2>
+        <button
+          onClick={() => {
+            dispatch("UP");
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          +
+        </button>
+        <button
+          onClick={() => {
+            dispatch("DOWN");
+          }}
+        >
+          -
+        </button>{" "}
+        <br />
+        <Main />
+      </div>
+    </ProductContext.Provider>
   );
 }
 
